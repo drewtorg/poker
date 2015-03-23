@@ -9,6 +9,7 @@ class Card:
 		self.rank = 0
 		self.suit = ''
 		self.image_path = ('img/'+str(rank) + str(suit) + '.png')
+		self.selected = False
 
 		#convert the rank to an integer so it's easier to compute the winner of a hand
 		if rank == 'A':
@@ -200,6 +201,10 @@ class Poker:
 				points = int(str(points) + (keyval[1] * str(keyval[0]).zfill(2)))
 
 		return points
+
+	def convert_score(self, score):
+
+		return "Royal Flush"
 
 	#a hand is a straight if, when sorted, the current card's rank + 1 is the same as the next card
 	def is_straight(self,hand):
