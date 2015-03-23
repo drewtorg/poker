@@ -17,6 +17,13 @@ RED  = (255,50,50)
 class Control:
 	def __init__(self):
 		self.start_up_init()
+		self.deck = PokerModel.Deck()
+		self.images = {}
+
+		for card in self.deck.deck:
+			self.images[str(card.rank)+str(card.suit)] = pygame.image.load(card.image_path).convert()
+			print card.image_path + " loaded"
+
 
 	def main(self):
 		if self.state == 0:
