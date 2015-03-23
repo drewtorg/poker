@@ -3,10 +3,10 @@ import os,sys
 import PokerModel
 
 poker = PokerModel.Poker()
-#poker.test()
+poker.test()
 
-HEIGHT = 480
-WIDTH = 640
+HEIGHT = 600
+WIDTH = 800
 
 #Global constants here
 WHITE = (255,255,255)
@@ -21,9 +21,9 @@ class Control:
 		self.images = {}
 
 		for card in self.deck.deck:
-			self.images[str(card.rank)+str(card.suit)] = pygame.image.load(card.image_path).convert()
+			self.images[str(card.rank) + card.suit] = pygame.image.load(card.image_path).convert_alpha()
+			self.images[str(card.rank) + card.suit] = pygame.transform.scale(self.images[str(card.rank) + card.suit], (WIDTH / 7, WIDTH / 5))
 			print card.image_path + " loaded"
-
 
 	def main(self):
 		if self.state == 0:
@@ -131,6 +131,10 @@ class Control:
 		del self.buttonRectOutline
 
 		#create the new variables
+		self.hand = PokerModel.Hand(self.deck.deal(5))
+
+		for card in self.hand:
+			print card
 
 	def play(self):
 		for event in pygame.event.get():
@@ -143,6 +147,13 @@ class Control:
 					print "Left click"
 
 		SCREEN.fill(GREY)
+
+		x = WIDTH / 7
+		for card in self.hand:
+			SCREEN.blit(self.images[str(card.rank)+card.suit], (x,0))
+			x += WIDTH / 7
+
+
 		pygame.display.flip()
 
 
@@ -157,7 +168,7 @@ class Control:
 if __name__ == "__main__":
 	os.environ['SDL_VIDEO_CENTERED'] = '1' #center screen
 	pygame.init()
-	pygame.display.set_caption("My Collision Detector")
+	pygame.display.set_caption("Poker")
 	SCREEN = pygame.display.set_mode((WIDTH, HEIGHT), 0 ,32)
 	
 	Runit = Control()

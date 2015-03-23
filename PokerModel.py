@@ -24,15 +24,7 @@ class Card:
 		else:
 			self.rank = int(rank)
 
-		#convert the suit to a word so it's easier to read
-		if suit == 'H':
-			self.suit = 'Hearts'
-		elif suit == 'S':
-			self.suit = 'Spades'
-		elif suit == 'C':
-			self.suit = 'Clubs'
-		else:
-			self.suit = 'Diamonds'
+		self.suit = suit
 
 	def __str__(self):
 		out = ""
@@ -49,7 +41,19 @@ class Card:
 		else:
 			out += str(self.rank)
 
-		return out + " of " + str(self.suit)
+		out += ' of '
+
+		#convert the suit to a word so it's easier to read
+		if self.suit == 'H':
+			out += 'Hearts'
+		elif self.suit == 'S':
+			out += 'Spades'
+		elif self.suit == 'C':
+			out += 'Clubs'
+		else:
+			out += 'Diamonds'
+
+		return out
 
 #only exists for the __str__ function
 class Hand:
@@ -62,6 +66,9 @@ class Hand:
 		for card in self.hand:
 			out += str(card) + ", "
 		return out
+
+	def __getitem__(self, index):
+		return self.hand[index]
 
 class Deck:
 
