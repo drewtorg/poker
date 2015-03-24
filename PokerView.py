@@ -2,9 +2,6 @@ import pygame
 import os,sys
 import PokerModel
 
-poker = PokerModel.Poker()
-poker.test()
-
 HEIGHT = 600
 WIDTH = 800
 
@@ -17,15 +14,29 @@ RED  = (255,50,50)
 class Control:
 	def __init__(self):
 		self.start_up_init()
-		self.deck = PokerModel.Deck()
+		self.poker = PokerModel.Poker()
+		deck = PokerModel.Deck()
 		self.images = {}
 		self.scale = .75
 		self.resolution = (WIDTH / 7, WIDTH / 5)
 
-		for card in self.deck.deck:
-			self.images[str(card.rank) + card.suit] = pygame.image.load(card.image_path).convert_alpha()
-			self.images[str(card.rank) + card.suit] = pygame.transform.scale(self.images[str(card.rank) + card.suit], (int(self.scale * self.resolution[0]), int(self.scale * self.resolution[1])))
-			print card.image_path + " loaded"
+
+		font = pygame.font.Font(None, 50)
+		loadText = font.render("Loading...", 1, WHITE)
+		loadSize = font.size("Loading...")
+		loadLoc = (WIDTH/2 - loadSize[0]/2, HEIGHT/2 - loadSize[1]/2)
+
+
+		SCREEN.fill(GREY)
+
+		SCREEN.blit(loadText, loadLoc)
+
+		pygame.display.flip()
+
+		for card in deck:
+			self.images[str(card)] = pygame.image.load(card.image_path).convert_alpha()
+			self.images[str(card)] = pygame.transform.scale(self.images[str(card)], (int(self.scale * self.resolution[0]), int(self.scale * self.resolution[1])))
+			print str(card) + " loaded"
 
 	def main(self):
 		if self.state == 0:
@@ -135,15 +146,29 @@ class Control:
 		del self.buttonRectOutline
 
 		#create the new variables
-		self.hand = PokerModel.Hand(self.deck.deal(5))
 		self.cardLoc = {}
+		self.round = 0
 
 		#setup the locations for each card in the hand
 		x = 2 * int(self.scale * self.resolution[0])
-		for card in self.hand:
-			print card
-			self.cardLoc[str(card.rank)+card.suit] = (x,0)
+		self.youLoc = (x - 150,50)
+
+		for index in range(len(self.poker.playerHand)):
+			print self.poker.playerHand[index]
+			self.cardLoc[index] = (x,0)
 			x += int(self. scale * self.resolution[0])
+			self.buttonLoc = (x + 30,50)
+
+		#setup the text that will be printed to the screen
+		self.font = pygame.font.Font(None, 30)
+		self.font2 = pygame.font.Font(None, 60)
+		self.youText = self.font.render("Your Hand", 1, WHITE)
+
+		self.replaceButton = self.font2.render("Replace", 1, BLACK)
+		self.buttonSize =self.font2.size("Replace")
+
+		self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
+		self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
 
 	def play(self):
 		for event in pygame.event.get():
@@ -155,19 +180,35 @@ class Control:
 				if event.button == 1:
 					#create a rectangle for the mouse click and for each card.  check for intersection
 					mouseRect = pygame.Rect(event.pos, (1,1))
-					for card in self.hand:										#this minus thirty fixes a minor bug, do not remove
-						cardRect = pygame.Rect(self.cardLoc[str(card.rank)+card.suit], (self.resolution[0] - 30, self.resolution[1]))
+					for index in range(len(self.poker.playerHand)):									#this minus thirty fixes a minor bug, do not remove
+						cardRect = pygame.Rect(self.cardLoc[index], (self.resolution[0] - 30, self.resolution[1]))
 						if cardRect.colliderect(mouseRect):
-							card.selected = not card.selected
+							self.poker.playerHand[index].selected = not self.poker.playerHand[index].selected
+							break
+
+					#check if we clicked the replaceButton
+					if mouseRect.colliderect(self.buttonRect):
+						self.poker.replace(self.poker.playerHand)
+						self.round += 1
+						#if self.round == 2:
+						#	self.state += 1
+
 						
 		SCREEN.fill(GREY)
 
 		#display the player's hand
-		for card in self.hand:
-			if not card.selected:
-				SCREEN.blit(self.images[str(card.rank)+card.suit], self.cardLoc[str(card.rank)+card.suit])
+		for index in range(len(self.poker.playerHand)):
+			if not self.poker.playerHand[index].selected:
+				SCREEN.blit(self.images[str(self.poker.playerHand[index])], self.cardLoc[index])
 			else:
-				SCREEN.blit(self.images[str(card.rank)+card.suit], self.cardLoc[str(card.rank)+card.suit], None, pygame.BLEND_SUB)
+				SCREEN.blit(self.images[str(self.poker.playerHand[index])], self.cardLoc[index], None, pygame.BLEND_SUB)
+
+		#display the text
+
+		SCREEN.blit(self.youText, self.youLoc)
+		pygame.draw.rect(SCREEN, RED, self.buttonRect)
+		pygame.draw.rect(SCREEN, BLACK, self.buttonRectOutline, 2)
+		SCREEN.blit(self.replaceButton, self.buttonLoc)
 
 		pygame.display.flip()
 

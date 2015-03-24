@@ -71,6 +71,9 @@ class Hand:
 	def __getitem__(self, index):
 		return self.hand[index]
 
+	def __len__(self):
+		return len(self.hand)
+
 class Deck:
 
 	def __init__(self):
@@ -85,6 +88,9 @@ class Deck:
 		for card in self.deck:
 			out += str(card) + "\n"
 		return out
+
+	def __getitem__(self, index):
+		return self.deck[index]
 
 	#return a list a cards taken from the deck
 	def deal(self, amount):
@@ -104,6 +110,23 @@ class Deck:
 
 
 class Poker:
+
+	def __init__(self):
+		self.deck = Deck()
+		self.playerHand = Hand(self.deck.deal(5))
+		self.comp1Hand = Hand(self.deck.deal(5))
+		self.comp2Hand = Hand(self.deck.deal(5))
+		self.comp3Hand = Hand(self.deck.deal(5))
+
+	def replace(self, hand):
+		count = 0
+		for i in xrange(3):
+			for card in hand:
+				if card.selected:
+					hand.hand.remove(card)
+					count += 1
+
+		hand.hand.extend(self.deck.deal(count))
 
 	#plays a round of poker with 4 hands
 	#winner is displayed and scores for each hand as well
@@ -226,55 +249,3 @@ class Poker:
 			if card.suit != suit:
 				return False
 		return True
-
-	def test(self):
-
-		poker = Poker()
-		deck = Deck()
-
-		#test a random hand
-		hand = Hand(deck.deal(5))
-		print poker.get_score(hand)
-
-		#test four of a kind
-		hand = Hand([Card(2, 'H'),Card(2, 'D'),Card(2, 'C'),Card(2, 'S'),Card(3, 'H')])
-		print poker.get_score(hand)
-
-		#test full house
-		hand = Hand([Card(2, 'H'),Card(2, 'D'),Card(3, 'C'),Card(3, 'S'),Card(3, 'H')])
-		print poker.get_score(hand)
-
-		#test three of a kind
-		hand = Hand([Card(2, 'H'),Card(2, 'D'),Card(2, 'C'),Card(4, 'S'),Card(3, 'H')])
-		print poker.get_score(hand)
-
-		#test two pair
-		hand = Hand([Card(2, 'H'),Card(2, 'D'),Card(4, 'C'),Card(4, 'S'),Card(3, 'H')])
-		print poker.get_score(hand)
-
-		#test one pair
-		hand = Hand([Card(2, 'H'),Card(2, 'D'),Card(4, 'C'),Card(2, 'S'),Card(3, 'H')])
-		print poker.get_score(hand)
-
-		#test high card
-		hand = Hand([Card(2, 'H'),Card(7, 'D'),Card(10, 'C'),Card(14, 'S'),Card(3, 'H')])
-		print poker.get_score(hand)
-
-		#test straight flush
-		hand = Hand([Card(2, 'H'),Card(3, 'H'),Card(4, 'H'),Card(5, 'H'),Card(6, 'H')])
-		print poker.get_score(hand)
-
-		#test flush
-		hand = Hand([Card(7, 'H'),Card(3, 'H'),Card(12, 'H'),Card(5, 'H'),Card(2, 'H')])
-		print poker.get_score(hand)
-
-		#test straight
-		hand = Hand([Card(2, 'H'),Card(3, 'D'),Card(4, 'C'),Card(5, 'H'),Card(6, 'S')])
-		print poker.get_score(hand)
-
-		#test a round of 4 random hands
-		hand1 = Hand(deck.deal(5))
-		hand2 = Hand(deck.deal(5))
-		hand3 = Hand(deck.deal(5))
-		hand4 = Hand(deck.deal(5))
-		print poker.play_round(hand1, hand2, hand3, hand4)
