@@ -2,8 +2,8 @@ import pygame
 import os,sys
 import PokerModel
 
-HEIGHT = 600
-WIDTH = 800
+HEIGHT = 720
+WIDTH = 1280
 
 #Global constants here
 WHITE = (255,255,255)
@@ -17,7 +17,7 @@ class Control:
 		self.poker = PokerModel.Poker()
 		deck = PokerModel.Deck()
 		self.images = {}
-		self.scale = .75
+		self.scale = .5
 		self.resolution = (WIDTH / 7, WIDTH / 5)
 
 
@@ -48,39 +48,6 @@ class Control:
 		elif self.state == 3:
 			self.new_game()
 
-		return
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				pygame.quit();sys.exit()
-			elif event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_a:
-					self.keydownA = True
-				if event.key == pygame.K_d:
-					self.keydownD = True
-				if event.key == pygame.K_w:
-					self.keydownW = True
-				if event.key == pygame.K_s:
-					self.keydownS = True
-
-
-			elif event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_RETURN:
-					self.state += 1
-
-			elif event.type == pygame.KEYUP:
-				if event.key == pygame.K_a:
-					self.keydownA = False
-				if event.key == pygame.K_d:
-					self.keydownD = False
-				if event.key == pygame.K_w:
-					self.keydownW = False
-				if event.key == pygame.K_s:
-					self.keydownS = False
-
-			elif event.type == pygame.MOUSEBUTTONDOWN:
-				if event.button == 1:
-					print "Left click"
-
 	def start_up_init(self):
 		#intitialize items for the startup section of the game
 		self.font = pygame.font.Font(None,150)
@@ -90,8 +57,8 @@ class Control:
 		self.startSize = self.font2.size("Welcome to Poker!")
 		self.startLoc = (WIDTH/2 - self.startSize[0]/2, 50)
 
-		self.startButton = self.font.render("Start", 1, BLACK)
-		self.buttonSize =self.font.size("Start")
+		self.startButton = self.font.render(" Start ", 1, BLACK)
+		self.buttonSize =self.font.size(" Start ")
 		self.buttonLoc = (WIDTH/2 - self.buttonSize[0]/2, HEIGHT/2 - self.buttonSize[1]/2)
 
 		self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
@@ -128,8 +95,6 @@ class Control:
 		pygame.display.flip()
 
 	def play_init(self):
-		print "play_init"
-
 		#clean up the variables from the old state
 		del self.font
 		del self.font2
@@ -150,12 +115,12 @@ class Control:
 		self.round = 0
 
 		#setup the locations for each card in the hand
-		x = 2 * int(self.scale * self.resolution[0])
+		x = 4.5 * int(self.scale * self.resolution[0])
 		self.youLoc = (x - 150,50)
 
 		for index in range(len(self.poker.playerHand)):
 			print self.poker.playerHand[index]
-			self.cardLoc[index] = (x,0)
+			self.cardLoc[index] = (x,50)
 			x += int(self. scale * self.resolution[0])
 			self.buttonLoc = (x + 30,50)
 
@@ -164,8 +129,8 @@ class Control:
 		self.font2 = pygame.font.Font(None, 60)
 		self.youText = self.font.render("Your Hand", 1, WHITE)
 
-		self.replaceButton = self.font2.render("Replace", 1, BLACK)
-		self.buttonSize =self.font2.size("Replace")
+		self.replaceButton = self.font2.render(" Replace ", 1, BLACK)
+		self.buttonSize =self.font2.size(" Replace ")
 
 		self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
 		self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
@@ -189,9 +154,12 @@ class Control:
 					#check if we clicked the replaceButton
 					if mouseRect.colliderect(self.buttonRect):
 						self.poker.replace(self.poker.playerHand)
+						self.poker.computerReplace()
 						self.round += 1
-						#if self.round == 2:
-						#	self.state += 1
+						if self.round == 2:
+							self.state += 1
+							self.results_init()
+							return
 
 						
 		SCREEN.fill(GREY)
@@ -212,9 +180,60 @@ class Control:
 
 		pygame.display.flip()
 
+	def results_init(self):
+		self.font = pygame.font.Font(None, 40)
+		self.replaceButton = self.font.render(" New Game ", 1, BLACK)
+		self.buttonSize =self.font.size(" New Game ")
+
+		self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
+		self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
 
 	def results(self):
-		print "results"
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit();sys.exit()
+
+			#when the user clicks the start button, change to the playing state
+			elif event.type == pygame.MOUSEBUTTONDOWN:
+				if event.button == 1:
+					mouseRect = pygame.Rect(event.pos, (1,1))
+					if mouseRect.colliderect(self.buttonRect):
+						print "new game"
+
+		SCREEN.fill(GREY)
+
+		#print player hand in the top
+		for index in range(len(self.poker.playerHand)):
+			SCREEN.blit(self.images[str(self.poker.playerHand[index])], self.cardLoc[index])
+
+		#print computer 1 on the left
+		x = 50
+		for card in self.poker.comp1Hand:
+			SCREEN.blit(self.images[str(card)], (x, HEIGHT / 2 - self.scale * self.resolution[1]/2))
+			x += int(self.scale * self.resolution[0])
+
+		#print computer 2 on the right
+		x = WIDTH - int(self.scale * self.resolution[0]) - 50
+		for card in self.poker.comp2Hand:
+			SCREEN.blit(self.images[str(card)], (x, HEIGHT / 2 - self.scale * self.resolution[1]/2))
+			x -= int(self.scale * self.resolution[0])
+
+		#print computer 3 on the bottom
+		x = 4.5 * int(self.scale * self.resolution[0])
+		for card in self.poker.comp2Hand:
+			SCREEN.blit(self.images[str(card)], (x, HEIGHT - self.scale * self.resolution[1] - 50))
+			x += int(self.scale * self.resolution[0])
+
+		#print labels next to each hand
+
+		#determine the winner and display with what they won
+
+		#display a play again button
+		pygame.draw.rect(SCREEN, RED, self.buttonRect)
+		pygame.draw.rect(SCREEN, BLACK, self.buttonRectOutline, 2)
+		SCREEN.blit(self.replaceButton, self.buttonLoc)
+
+		pygame.display.flip()
 
 	def new_game(self):
 		print "new_game"

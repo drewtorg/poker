@@ -118,6 +118,17 @@ class Poker:
 		self.comp2Hand = Hand(self.deck.deal(5))
 		self.comp3Hand = Hand(self.deck.deal(5))
 
+	#make each computer take a turn
+	def computerReplace(self):
+		self.AI_replace(self.comp1Hand)
+		self.AI_replace(self.comp2Hand)
+		self.AI_replace(self.comp3Hand)
+
+	#TODO: Implement awesome AI here
+	def AI_replace(self, hand):
+		self.replace(hand)
+
+	#repalces the selected cards in the hand with the top cards on the deck
 	def replace(self, hand):
 		count = 0
 		for i in xrange(3):
@@ -131,12 +142,12 @@ class Poker:
 	#plays a round of poker with 4 hands
 	#winner is displayed and scores for each hand as well
 	#the number of the winner is returned by the function
-	def play_round(self, hand1, hand2, hand3, hand4):
+	def play_round(self):
 
-		score1 = self.get_score(hand1)
-		score2 = self.get_score(hand2)
-		score3 = self.get_score(hand3)
-		score4 = self.get_score(hand4)
+		score1 = self.get_score(self.playerHand)
+		score2 = self.get_score(self.comp1Hand)
+		score3 = self.get_score(self.comp2Hand)
+		score4 = self.get_score(self.comp3Hand)
 
 		print "Score1: " + str(score1)
 		print "Score2: " + str(score2)
@@ -225,9 +236,26 @@ class Poker:
 
 		return points
 
+	#given an integer score, returns the poker term equivalent
 	def convert_score(self, score):
-
-		return "Royal Flush"
+		if str(score)[0] == 1:
+			return "High Card"
+		elif str(score)[0] == 2:
+			return "One Pair"
+		elif str(score)[0] == 3:
+			return "Two Pair"
+		elif str(score)[0] == 4:
+			return "Three of a Kind"
+		elif str(score)[0] == 5:
+			return "Straight"
+		elif str(score)[0] == 6:
+			return "Flush"
+		elif str(score)[0] == 7:
+			return "Full House"
+		elif str(score)[0] == 8:
+			return "Four of a Kind"
+		elif str(score)[0] == 9:
+			return "Straight Flush"
 
 	#a hand is a straight if, when sorted, the current card's rank + 1 is the same as the next card
 	def is_straight(self,hand):
