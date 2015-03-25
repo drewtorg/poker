@@ -13,12 +13,12 @@ RED  = (255,50,50)
 
 class Control:
 	def __init__(self):
-		self.start_up_init()
 		self.poker = PokerModel.Poker()
 		deck = PokerModel.Deck()
 		self.images = {}
 		self.scale = .5
-		self.resolution = (WIDTH / 7, WIDTH / 5)
+		self.cardSize = (WIDTH / 7, WIDTH / 5)
+		self.buffer = 50
 
 
 		font = pygame.font.Font(None, 50)
@@ -35,8 +35,10 @@ class Control:
 
 		for card in deck:
 			self.images[str(card)] = pygame.image.load(card.image_path).convert_alpha()
-			self.images[str(card)] = pygame.transform.scale(self.images[str(card)], (int(self.scale * self.resolution[0]), int(self.scale * self.resolution[1])))
+			self.images[str(card)] = pygame.transform.scale(self.images[str(card)], (int(self.scale * self.cardSize[0]), int(self.scale * self.cardSize[1])))
 			print str(card) + " loaded"
+
+		self.start_up_init()
 
 	def main(self):
 		if self.state == 0:
@@ -55,7 +57,7 @@ class Control:
 
 		self.startText = self.font2.render("Welcome to Poker!", 1, WHITE)
 		self.startSize = self.font2.size("Welcome to Poker!")
-		self.startLoc = (WIDTH/2 - self.startSize[0]/2, 50)
+		self.startLoc = (WIDTH/2 - self.startSize[0]/2, self.buffer)
 
 		self.startButton = self.font.render(" Start ", 1, BLACK)
 		self.buttonSize =self.font.size(" Start ")
@@ -115,14 +117,14 @@ class Control:
 		self.round = 0
 
 		#setup the locations for each card in the hand
-		x = 4.5 * int(self.scale * self.resolution[0])
-		self.youLoc = (x - 150,50)
+		x = 4.5 * int(self.scale * self.cardSize[0])
+		self.youLoc = (x - 150, self.buffer)
 
 		for index in range(len(self.poker.playerHand)):
 			print self.poker.playerHand[index]
-			self.cardLoc[index] = (x,50)
-			x += int(self. scale * self.resolution[0])
-			self.buttonLoc = (x + 30,50)
+			self.cardLoc[index] = (x, self.buffer)
+			x += int(self. scale * self.cardSize[0])
+			self.buttonLoc = (x + 30, self.buffer)
 
 		#setup the text that will be printed to the screen
 		self.font = pygame.font.Font(None, 30)
@@ -146,7 +148,7 @@ class Control:
 					#create a rectangle for the mouse click and for each card.  check for intersection
 					mouseRect = pygame.Rect(event.pos, (1,1))
 					for index in range(len(self.poker.playerHand)):									#this minus thirty fixes a minor bug, do not remove
-						cardRect = pygame.Rect(self.cardLoc[index], (self.resolution[0] - 30, self.resolution[1]))
+						cardRect = pygame.Rect(self.cardLoc[index], (int(self.scale * self.cardSize[0]), int(self.scale * self.cardSize[1])))
 						if cardRect.colliderect(mouseRect):
 							self.poker.playerHand[index].selected = not self.poker.playerHand[index].selected
 							break
@@ -203,26 +205,16 @@ class Control:
 		SCREEN.fill(GREY)
 
 		#print player hand in the top
-		for index in range(len(self.poker.playerHand)):
-			SCREEN.blit(self.images[str(self.poker.playerHand[index])], self.cardLoc[index])
+		self.display_hand(self.poker.playerHand, self.cardLoc[0][0], self.cardLoc[0][1])
 
 		#print computer 1 on the left
-		x = 50
-		for card in self.poker.comp1Hand:
-			SCREEN.blit(self.images[str(card)], (x, HEIGHT / 2 - self.scale * self.resolution[1]/2))
-			x += int(self.scale * self.resolution[0])
+		self.display_hand(self.poker.comp1Hand, self.buffer, HEIGHT / 2 - self.scale * self.cardSize[1]/2)
 
 		#print computer 2 on the right
-		x = WIDTH - int(self.scale * self.resolution[0]) - 50
-		for card in self.poker.comp2Hand:
-			SCREEN.blit(self.images[str(card)], (x, HEIGHT / 2 - self.scale * self.resolution[1]/2))
-			x -= int(self.scale * self.resolution[0])
+		self.display_hand(self.poker.comp2Hand, WIDTH - int(5 * self.scale * self.cardSize[0]) - self.buffer, HEIGHT / 2 - self.scale * self.cardSize[1]/2)
 
 		#print computer 3 on the bottom
-		x = 4.5 * int(self.scale * self.resolution[0])
-		for card in self.poker.comp2Hand:
-			SCREEN.blit(self.images[str(card)], (x, HEIGHT - self.scale * self.resolution[1] - 50))
-			x += int(self.scale * self.resolution[0])
+		self.display_hand(self.poker.comp3Hand, 4.5 * int(self.scale * self.cardSize[0]), HEIGHT - self.scale * self.cardSize[1] - self.buffer)
 
 		#print labels next to each hand
 
@@ -237,6 +229,11 @@ class Control:
 
 	def new_game(self):
 		print "new_game"
+
+	def display_hand(self, hand, x, y):
+		for card in hand:
+			SCREEN.blit(self.images[str(card)], (x, y))
+			x += int(self.scale * self.cardSize[0])
 
 
 #############################################################
