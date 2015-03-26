@@ -13,7 +13,6 @@ RED  = (255,50,50)
 
 class Control:
 	def __init__(self):
-		self.poker = PokerModel.Poker()
 		deck = PokerModel.Deck()
 		self.images = {}
 		self.scale = .5
@@ -53,6 +52,8 @@ class Control:
 
 	def start_up_init(self):
 		#intitialize items for the startup section of the game
+		self.poker = PokerModel.Poker()
+
 		self.font = pygame.font.Font(None,150)
 		self.font2 = pygame.font.Font(None, 75)
 
@@ -129,6 +130,9 @@ class Control:
 		self.font = pygame.font.Font(None, 30)
 		self.font2 = pygame.font.Font(None, 60)
 		self.youText = self.font.render("Your Hand", 1, WHITE)
+		self.youSize = self.font.size("Your Hand")
+
+		self.youLoc = (self.youLoc[0], self.buffer + self.scale * self.cardSize[1]/2 - self.youSize[1]/2)
 
 		self.replaceButton = self.font2.render(" Replace ", 1, BLACK)
 		self.buttonSize =self.font2.size(" Replace ")
@@ -183,14 +187,43 @@ class Control:
 		pygame.display.flip()
 
 	def results_init(self):
-		self.font = pygame.font.Font(None, 40)
-		self.replaceButton = self.font.render(" New Game ", 1, BLACK)
-		self.buttonSize =self.font.size(" New Game ")
+		#initialize variables for the button
+		self.font = pygame.font.Font(None, 30)
+		self.replaceButton = self.font2.render(" New Game ", 1, BLACK)
+		self.buttonSize =self.font2.size(" New Game ")
 
 		self.buttonLoc = (self.buttonLoc[0], self.buffer + self.scale * self.cardSize[1]/2 - self.buttonSize[1]/2)
 
 		self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
 		self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
+
+		#initialize variables for drawing the hands
+		self.comp1Loc = (self.buffer, HEIGHT / 2 - self.scale * self.cardSize[1]/2)
+		self.comp2Loc = (WIDTH - int(5 * self.scale * self.cardSize[0]) - self.buffer, HEIGHT / 2 - self.scale * self.cardSize[1]/2)
+		self.comp3Loc = ( 4.5 * int(self.scale * self.cardSize[0]), HEIGHT - self.scale * self.cardSize[1] - self.buffer)
+
+		self.result = self.poker.play_round()
+
+		#initialize variables for labeling the hands
+		playerScore = self.poker.convert_score(self.result[0])
+		self.youText = self.font.render(playerScore, 1, WHITE)
+		self.youSize = self.font.size(playerScore)
+		self.youLoc = (self.cardLoc[0][0],self.cardLoc[0][1] - 20)
+
+		comp1Score = self.poker.convert_score(self.result[1])
+		self.comp1Label = self.font.render(comp1Score, 1, WHITE)
+		self.comp1LabelSize = self.font.size(comp1Score)
+		self.comp1LabelLoc = (self.comp1Loc[0], self.comp1Loc[1] - 20)
+
+		comp2Score = self.poker.convert_score(self.result[2])
+		self.comp2Label = self.font.render(comp2Score, 1, WHITE)
+		self.comp2LabelSize = self.font.size(comp2Score)
+		self.comp2LabelLoc = (self.comp2Loc[0], self.comp2Loc[1] - 20)
+
+		comp3Score = self.poker.convert_score(self.result[3])
+		self.comp3Label = self.font.render(comp3Score, 1, WHITE)
+		self.comp3LabelSize = self.font.size(comp3Score)
+		self.comp3LabelLoc = (self.comp3Loc[0], self.comp3Loc[1] - 20)
 
 	def results(self):
 		for event in pygame.event.get():
@@ -202,7 +235,8 @@ class Control:
 				if event.button == 1:
 					mouseRect = pygame.Rect(event.pos, (1,1))
 					if mouseRect.colliderect(self.buttonRect):
-						print "new game"
+						self.start_up_init()
+						return
 
 		SCREEN.fill(GREY)
 
@@ -210,15 +244,19 @@ class Control:
 		self.display_hand(self.poker.playerHand, self.cardLoc[0][0], self.cardLoc[0][1])
 
 		#print computer 1 on the left
-		self.display_hand(self.poker.comp1Hand, self.buffer, HEIGHT / 2 - self.scale * self.cardSize[1]/2)
+		self.display_hand(self.poker.comp1Hand, self.comp1Loc[0], self.comp1Loc[1])
 
 		#print computer 2 on the right
-		self.display_hand(self.poker.comp2Hand, WIDTH - int(5 * self.scale * self.cardSize[0]) - self.buffer, HEIGHT / 2 - self.scale * self.cardSize[1]/2)
+		self.display_hand(self.poker.comp2Hand,self.comp2Loc[0], self.comp2Loc[1])
 
 		#print computer 3 on the bottom
-		self.display_hand(self.poker.comp3Hand, 4.5 * int(self.scale * self.cardSize[0]), HEIGHT - self.scale * self.cardSize[1] - self.buffer)
+		self.display_hand(self.poker.comp3Hand, self.comp3Loc[0], self.comp3Loc[1])
 
-		#print labels next to each hand
+		#print "Your Hand label"
+		SCREEN.blit(self.youText, self.youLoc)
+		SCREEN.blit(self.comp1Label, self.comp1LabelLoc)
+		SCREEN.blit(self.comp2Label, self.comp2LabelLoc)
+		SCREEN.blit(self.comp3Label, self.comp3LabelLoc)
 
 		#determine the winner and display with what they won
 
@@ -229,13 +267,13 @@ class Control:
 
 		pygame.display.flip()
 
-	def new_game(self):
-		print "new_game"
-
 	def display_hand(self, hand, x, y):
 		for card in hand:
 			SCREEN.blit(self.images[str(card)], (x, y))
 			x += int(self.scale * self.cardSize[0])
+
+	def display_scoreboard(self):
+		print "meh"
 
 
 #############################################################

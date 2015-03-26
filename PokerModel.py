@@ -113,6 +113,8 @@ class Poker:
 
 	def __init__(self):
 		self.deck = Deck()
+		self.scores = [0,0,0,0]
+
 		self.playerHand = Hand(self.deck.deal(5))
 		self.comp1Hand = Hand(self.deck.deal(5))
 		self.comp2Hand = Hand(self.deck.deal(5))
@@ -149,30 +151,22 @@ class Poker:
 		score3 = self.get_score(self.comp2Hand)
 		score4 = self.get_score(self.comp3Hand)
 
-		print "Score1: " + str(score1)
-		print "Score2: " + str(score2)
-		print "Score3: " + str(score3)
-		print "Score4: " + str(score4)
-
 		winner = max(score1, max(score2, max(score3, score4)))
 
 		if winner == score1:
-			print 'Player 1 Wins!'
-			return 1
+			self.scores[0] += 1
 
 		elif winner == score2:
-			print 'Player 2 Wins!'
-			return 2
+			self.scores[1] += 1
 
 		elif winner == score3:
-			print 'Player 3 Wins!'
-			return 3
+			self.scores[2] += 1
 
 		elif winner == score4:
-			print 'Player 4 Wins!'
-			return 4
+			self.scores[3] += 1
 
-		return -1
+		return [score1, score2, score3, score4]
+
 
 	#returns an integer that represents a score given to the hand.  The first digits represents the type of hand and the rest represent the cards in the hands
 	def get_score(self, hand):
@@ -195,38 +189,29 @@ class Poker:
 
 		if straight and flush:
 			points = max(points, 9) #straight flush
-			print str(hand) + ": Straight flush"
 		elif flush and not straight:
 			points = max(points, 6) #flush
-			print str(hand) + ": Flush"
 		elif not flush and straight:
 			points = max(points, 5) #straight
-			print str(hand) + ": Straight"
 
 		elif uniqueCount == 2:
 			if max(cardCount.values()) == 4:
 				points = 8 #four of a kind (2 uniques and 4 are the same)
-				print str(hand) + ": Four of a kind"
 			elif max(cardCount.values()) == 3:
 				points = 7 #full house (2 unique and 3 are the same)
-				print str(hand) + ": Full house"
 
 		elif uniqueCount == 3:
 			if max(cardCount.values()) == 3:
 				points = 4 #three of a kind (3 unique and 3 are the same)
-				print str(hand) + ": Three of a kind"
 			elif max(cardCount.values()) == 2:
 				points = 3 #two pair (3 uniques and 2 are the same)
-				print str(hand) + ": Two pair"
 
 		elif uniqueCount == 4:
 			if max(cardCount.values()) == 2:
 				points = 2 #one pair (4 uniques and 2 are the same)
-				print str(hand) + ": One pair"
 
 		elif uniqueCount == 5:
 			points = 1 #high card 
-			print str(hand) + ": High card"
 
 		#print out the values of the cards in order from greatest to least with 2 digits for each card in order to generate a point value
 		sorted_cardCount = sorted(cardCount.iteritems(), key=operator.itemgetter(1,0), reverse=True)
@@ -238,23 +223,23 @@ class Poker:
 
 	#given an integer score, returns the poker term equivalent
 	def convert_score(self, score):
-		if str(score)[0] == 1:
+		if str(score)[0] == '1':
 			return "High Card"
-		elif str(score)[0] == 2:
+		elif str(score)[0] == '2':
 			return "One Pair"
-		elif str(score)[0] == 3:
+		elif str(score)[0] == '3':
 			return "Two Pair"
-		elif str(score)[0] == 4:
+		elif str(score)[0] == '4':
 			return "Three of a Kind"
-		elif str(score)[0] == 5:
+		elif str(score)[0] == '5':
 			return "Straight"
-		elif str(score)[0] == 6:
+		elif str(score)[0] == '6':
 			return "Flush"
-		elif str(score)[0] == 7:
+		elif str(score)[0] == '7':
 			return "Full House"
-		elif str(score)[0] == 8:
+		elif str(score)[0] == '8':
 			return "Four of a Kind"
-		elif str(score)[0] == 9:
+		elif str(score)[0] == '9':
 			return "Straight Flush"
 
 	#a hand is a straight if, when sorted, the current card's rank + 1 is the same as the next card
