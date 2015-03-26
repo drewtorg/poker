@@ -19,6 +19,8 @@ class Control:
 		self.scale = .5
 		self.cardSize = (WIDTH / 7, WIDTH / 5)
 		self.buffer = 50
+		self.cardBack = pygame.image.load('img/back.png').convert_alpha()
+		self.cardBack = pygame.transform.scale(self.cardBack,(int(self.scale * self.cardSize[0]), int(self.scale * self.cardSize[1])))
 
 
 		font = pygame.font.Font(None, 50)
@@ -36,7 +38,6 @@ class Control:
 		for card in deck:
 			self.images[str(card)] = pygame.image.load(card.image_path).convert_alpha()
 			self.images[str(card)] = pygame.transform.scale(self.images[str(card)], (int(self.scale * self.cardSize[0]), int(self.scale * self.cardSize[1])))
-			print str(card) + " loaded"
 
 		self.start_up_init()
 
@@ -121,10 +122,8 @@ class Control:
 		self.youLoc = (x - 150, self.buffer)
 
 		for index in range(len(self.poker.playerHand)):
-			print self.poker.playerHand[index]
 			self.cardLoc[index] = (x, self.buffer)
 			x += int(self. scale * self.cardSize[0])
-			self.buttonLoc = (x + 30, self.buffer)
 
 		#setup the text that will be printed to the screen
 		self.font = pygame.font.Font(None, 30)
@@ -133,6 +132,8 @@ class Control:
 
 		self.replaceButton = self.font2.render(" Replace ", 1, BLACK)
 		self.buttonSize =self.font2.size(" Replace ")
+
+		self.buttonLoc = (x + 30, self.buffer + self.scale * self.cardSize[1]/2 - self.buttonSize[1]/2)
 
 		self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
 		self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
@@ -171,10 +172,9 @@ class Control:
 			if not self.poker.playerHand[index].selected:
 				SCREEN.blit(self.images[str(self.poker.playerHand[index])], self.cardLoc[index])
 			else:
-				SCREEN.blit(self.images[str(self.poker.playerHand[index])], self.cardLoc[index], None, pygame.BLEND_SUB)
+				SCREEN.blit(self.cardBack, self.cardLoc[index])
 
 		#display the text
-
 		SCREEN.blit(self.youText, self.youLoc)
 		pygame.draw.rect(SCREEN, RED, self.buttonRect)
 		pygame.draw.rect(SCREEN, BLACK, self.buttonRectOutline, 2)
