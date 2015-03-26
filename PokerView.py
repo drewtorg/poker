@@ -187,6 +187,8 @@ class Control:
 		self.replaceButton = self.font.render(" New Game ", 1, BLACK)
 		self.buttonSize =self.font.size(" New Game ")
 
+		self.buttonLoc = (self.buttonLoc[0], self.buffer + self.scale * self.cardSize[1]/2 - self.buttonSize[1]/2)
+
 		self.buttonRect = pygame.Rect(self.buttonLoc, self.buttonSize)
 		self.buttonRectOutline = pygame.Rect(self.buttonLoc, self.buttonSize)
 
