@@ -27,6 +27,7 @@ class Control:
 		loadSize = font.size("Loading...")
 		loadLoc = (WIDTH/2 - loadSize[0]/2, HEIGHT/2 - loadSize[1]/2)
 
+		self.scores = [0,0,0,0]
 
 		SCREEN.fill(GREY)
 
@@ -52,7 +53,7 @@ class Control:
 
 	def start_up_init(self):
 		#intitialize items for the startup section of the game
-		self.poker = PokerModel.Poker()
+		self.poker = PokerModel.Poker(self.scores)
 
 		self.font = pygame.font.Font(None,150)
 		self.font2 = pygame.font.Font(None, 75)
@@ -184,6 +185,9 @@ class Control:
 		pygame.draw.rect(SCREEN, BLACK, self.buttonRectOutline, 2)
 		SCREEN.blit(self.replaceButton, self.buttonLoc)
 
+		#display the scoreboard
+		self.display_scoreboard()
+
 		pygame.display.flip()
 
 	def results_init(self):
@@ -252,13 +256,14 @@ class Control:
 		#print computer 3 on the bottom
 		self.display_hand(self.poker.comp3Hand, self.comp3Loc[0], self.comp3Loc[1])
 
-		#print "Your Hand label"
+		#print labels saing what each hand was
 		SCREEN.blit(self.youText, self.youLoc)
 		SCREEN.blit(self.comp1Label, self.comp1LabelLoc)
 		SCREEN.blit(self.comp2Label, self.comp2LabelLoc)
 		SCREEN.blit(self.comp3Label, self.comp3LabelLoc)
 
-		#determine the winner and display with what they won
+		#display a score screen
+		self.display_scoreboard()
 
 		#display a play again button
 		pygame.draw.rect(SCREEN, RED, self.buttonRect)
@@ -273,7 +278,17 @@ class Control:
 			x += int(self.scale * self.cardSize[0])
 
 	def display_scoreboard(self):
-		print "meh"
+		#create labels for each player
+		self.playerScoreLabel = self.font.render("You: " + str(self.poker.scores[0]), 1, WHITE)
+		self.comp1ScoreLabel = self.font.render("Computer 1: "  +str(self.poker.scores[1]), 1, WHITE)
+		self.comp2ScoreLabel = self.font.render("Computer 2: "  +str(self.poker.scores[2]), 1, WHITE)
+		self.comp3ScoreLabel = self.font.render("Computer 3: "  +str(self.poker.scores[3]), 1, WHITE)
+
+		SCREEN.blit(self.playerScoreLabel, (10, 10))
+		SCREEN.blit(self.comp1ScoreLabel, (10, 30))
+		SCREEN.blit(self.comp2ScoreLabel, (10, 50))
+		SCREEN.blit(self.comp3ScoreLabel, (10, 70))
+		#print "meh"
 
 
 #############################################################

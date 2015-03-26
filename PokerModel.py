@@ -120,6 +120,15 @@ class Poker:
 		self.comp2Hand = Hand(self.deck.deal(5))
 		self.comp3Hand = Hand(self.deck.deal(5))
 
+	def __init__(self, scores):
+		self.deck = Deck()
+		self.scores = scores
+
+		self.playerHand = Hand(self.deck.deal(5))
+		self.comp1Hand = Hand(self.deck.deal(5))
+		self.comp2Hand = Hand(self.deck.deal(5))
+		self.comp3Hand = Hand(self.deck.deal(5))
+
 	#make each computer take a turn
 	def computerReplace(self):
 		self.AI_replace(self.comp1Hand)
