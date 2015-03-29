@@ -135,9 +135,50 @@ class Poker:
 		self.AI_replace(self.comp2Hand)
 		self.AI_replace(self.comp3Hand)
 
-	#TODO: Implement awesome AI here
-	def AI_replace(self, hand):
+	def get_most_suit(self, hand):
+		suits = {'H':0, 'C':0, 'S':0, 'D':0}
+		for card in hand:
+			suits[card.suit] += 1
+		return max(suits.iteritems(), key=operator.itemgetter(1))[0]
+
+	def get_most_rank(self, hand):
+		ranks = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0}
+		for card in hand:
+			ranks[card.rank] += 1
+		return max(ranks.iteritems(), key=operator.itemgetter(1))[0]
+
+	def replace_suit(self, hand):
+		suit = self.get_most_suit(hand)
+		for card in hand:
+			if card.suit != suit:
+				card.selected = True
 		self.replace(hand)
+
+	def replace_rank(self, hand):
+		rank = self.get_most_rank(hand)
+		for card in hand:
+			if card.rank != rank:
+				card.selected = True
+		self.replace(hand)
+
+	def AI_replace(self, hand):
+
+		score = self.get_score(hand)
+
+		#decide which cards not to toss away so as to keep the same score
+
+		if str(score)[0] == '1': #High card, try for flush
+			self.replace_suit(hand)
+		elif str(score)[0] == '2': #One pair, switch out cards not paired
+			self.replace_rank(hand)
+		elif str(score)[0] == '3': #Two pair, switch out card not paired
+			self.replace_rank(hand)
+		elif str(score)[0] == '4': #Three of a kind, switch out cards not paired
+			self.replace_rank(hand)
+		elif str(score)[0] == '8': #Four of a kind, switch out the not paired not
+			self.replace_rank(hand)
+
+		#all other cases are a pass
 
 	#repalces the selected cards in the hand with the top cards on the deck
 	def replace(self, hand):

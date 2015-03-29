@@ -18,6 +18,7 @@ class Control:
 		self.scale = .5
 		self.cardSize = (WIDTH / 7, WIDTH / 5)
 		self.buffer = 50
+		self.background = pygame.image.load('img/background.jpg').convert_alpha()
 		self.cardBack = pygame.image.load('img/back.png').convert_alpha()
 		self.cardBack = pygame.transform.scale(self.cardBack,(int(self.scale * self.cardSize[0]), int(self.scale * self.cardSize[1])))
 
@@ -29,7 +30,7 @@ class Control:
 
 		self.scores = [0,0,0,0]
 
-		SCREEN.fill(GREY)
+		SCREEN.blit(self.background, (-320,-100))
 
 		SCREEN.blit(loadText, loadLoc)
 
@@ -86,8 +87,8 @@ class Control:
 						self.play_init()
 						return
 
-		#draw images
-		SCREEN.fill(GREY)
+		#draw background
+		SCREEN.blit(self.background, (-320,-100))
 
 		#draw welcome text
 		SCREEN.blit(self.startText, self.startLoc)
@@ -169,8 +170,8 @@ class Control:
 							self.results_init()
 							return
 
-						
-		SCREEN.fill(GREY)
+		#display background	
+		SCREEN.blit(self.background, (-320,-100))
 
 		#display the player's hand
 		for index in range(len(self.poker.playerHand)):
@@ -242,7 +243,8 @@ class Control:
 						self.start_up_init()
 						return
 
-		SCREEN.fill(GREY)
+		#display background
+		SCREEN.blit(self.background, (-320,-100))
 
 		#print player hand in the top
 		self.display_hand(self.poker.playerHand, self.cardLoc[0][0], self.cardLoc[0][1])
@@ -288,7 +290,6 @@ class Control:
 		SCREEN.blit(self.comp1ScoreLabel, (10, 30))
 		SCREEN.blit(self.comp2ScoreLabel, (10, 50))
 		SCREEN.blit(self.comp3ScoreLabel, (10, 70))
-		#print "meh"
 
 
 #############################################################
