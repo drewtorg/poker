@@ -6,10 +6,10 @@ HEIGHT = 720
 WIDTH = 1280
 
 #Global constants here
-WHITE = (255,255,255)
+BLACK = (255,255,255)
 BLACK = (0,0,0)
 GREY  = (50,50,50)
-RED  = (255,50,50)
+RED  = (207,0,0)
 
 class Control:
 	def __init__(self):
@@ -23,8 +23,8 @@ class Control:
 		self.cardBack = pygame.transform.scale(self.cardBack,(int(self.scale * self.cardSize[0]), int(self.scale * self.cardSize[1])))
 
 
-		font = pygame.font.Font(None, 50)
-		loadText = font.render("Loading...", 1, WHITE)
+		font = pygame.font.Font('font/CoffeeTin.ttf', 50)
+		loadText = font.render("Loading...", 1, BLACK)
 		loadSize = font.size("Loading...")
 		loadLoc = (WIDTH/2 - loadSize[0]/2, HEIGHT/2 - loadSize[1]/2)
 
@@ -56,10 +56,11 @@ class Control:
 		#intitialize items for the startup section of the game
 		self.poker = PokerModel.Poker(self.scores)
 
-		self.font = pygame.font.Font(None,150)
-		self.font2 = pygame.font.Font(None, 75)
+		self.font = pygame.font.Font('font/CoffeeTin.ttf',150)
+		self.font2 = pygame.font.Font('font/IndianPoker.ttf', 75)
+		self.font2.set_bold(True)
 
-		self.startText = self.font2.render("Welcome to Poker!", 1, WHITE)
+		self.startText = self.font2.render("Welcome to Poker!", 1, BLACK)
 		self.startSize = self.font2.size("Welcome to Poker!")
 		self.startLoc = (WIDTH/2 - self.startSize[0]/2, self.buffer)
 
@@ -101,21 +102,6 @@ class Control:
 		pygame.display.flip()
 
 	def play_init(self):
-		#clean up the variables from the old state
-		del self.font
-		del self.font2
-
-		del self.startText
-		del self.startSize
-		del self.startLoc
-
-		del self.startButton
-		del self.buttonSize
-		del self.buttonLoc
-
-		del self.buttonRect
-		del self.buttonRectOutline
-
 		#create the new variables
 		self.cardLoc = {}
 		self.round = 0
@@ -129,12 +115,13 @@ class Control:
 			x += int(self. scale * self.cardSize[0])
 
 		#setup the text that will be printed to the screen
-		self.font = pygame.font.Font(None, 30)
-		self.font2 = pygame.font.Font(None, 60)
-		self.youText = self.font.render("Your Hand", 1, WHITE)
+		self.font = pygame.font.Font('font/IndianPoker.ttf', 25)
+		self.font.set_bold(True)
+		self.font2 = pygame.font.Font('font/CoffeeTin.ttf', 60)
+		self.youText = self.font.render("Your Hand", 1, BLACK)
 		self.youSize = self.font.size("Your Hand")
 
-		self.youLoc = (self.youLoc[0], self.buffer + self.scale * self.cardSize[1]/2 - self.youSize[1]/2)
+		self.youLoc = (self.cardLoc[0][0],self.cardLoc[0][1] - 30)#(self.youLoc[0], self.buffer + self.scale * self.cardSize[1]/2 - self.youSize[1]/2)
 
 		self.replaceButton = self.font2.render(" Replace ", 1, BLACK)
 		self.buttonSize =self.font2.size(" Replace ")
@@ -193,7 +180,7 @@ class Control:
 
 	def results_init(self):
 		#initialize variables for the button
-		self.font = pygame.font.Font(None, 30)
+		# self.font = pygame.font.Font('font/IndianPoker.ttf', 25)
 		self.replaceButton = self.font2.render(" New Game ", 1, BLACK)
 		self.buttonSize =self.font2.size(" New Game ")
 
@@ -211,24 +198,24 @@ class Control:
 
 		#initialize variables for labeling the hands
 		playerScore = self.poker.convert_score(self.result[0])
-		self.youText = self.font.render(playerScore, 1, WHITE)
+		self.youText = self.font.render(playerScore, 1, BLACK)
 		self.youSize = self.font.size(playerScore)
-		self.youLoc = (self.cardLoc[0][0],self.cardLoc[0][1] - 20)
+		self.youLoc = (self.cardLoc[0][0],self.cardLoc[0][1] - 30)
 
 		comp1Score = self.poker.convert_score(self.result[1])
-		self.comp1Label = self.font.render(comp1Score, 1, WHITE)
+		self.comp1Label = self.font.render(comp1Score, 1, BLACK)
 		self.comp1LabelSize = self.font.size(comp1Score)
-		self.comp1LabelLoc = (self.comp1Loc[0], self.comp1Loc[1] - 20)
+		self.comp1LabelLoc = (self.comp1Loc[0], self.comp1Loc[1] - 30)
 
 		comp2Score = self.poker.convert_score(self.result[2])
-		self.comp2Label = self.font.render(comp2Score, 1, WHITE)
+		self.comp2Label = self.font.render(comp2Score, 1, BLACK)
 		self.comp2LabelSize = self.font.size(comp2Score)
-		self.comp2LabelLoc = (self.comp2Loc[0], self.comp2Loc[1] - 20)
+		self.comp2LabelLoc = (self.comp2Loc[0], self.comp2Loc[1] - 30)
 
 		comp3Score = self.poker.convert_score(self.result[3])
-		self.comp3Label = self.font.render(comp3Score, 1, WHITE)
+		self.comp3Label = self.font.render(comp3Score, 1, BLACK)
 		self.comp3LabelSize = self.font.size(comp3Score)
-		self.comp3LabelLoc = (self.comp3Loc[0], self.comp3Loc[1] - 20)
+		self.comp3LabelLoc = (self.comp3Loc[0], self.comp3Loc[1] - 30)
 
 	def results(self):
 		for event in pygame.event.get():
@@ -240,7 +227,10 @@ class Control:
 				if event.button == 1:
 					mouseRect = pygame.Rect(event.pos, (1,1))
 					if mouseRect.colliderect(self.buttonRect):
-						self.start_up_init()
+						# self.start_up_init()
+						self.state = 1
+						self.play_init()
+						self.poker = PokerModel.Poker(self.scores)
 						return
 
 		#display background
@@ -281,15 +271,15 @@ class Control:
 
 	def display_scoreboard(self):
 		#create labels for each player
-		self.playerScoreLabel = self.font.render("You: " + str(self.poker.scores[0]), 1, WHITE)
-		self.comp1ScoreLabel = self.font.render("Computer 1: "  +str(self.poker.scores[1]), 1, WHITE)
-		self.comp2ScoreLabel = self.font.render("Computer 2: "  +str(self.poker.scores[2]), 1, WHITE)
-		self.comp3ScoreLabel = self.font.render("Computer 3: "  +str(self.poker.scores[3]), 1, WHITE)
+		self.playerScoreLabel = self.font.render("You: " + str(self.poker.scores[0]), 1, BLACK)
+		self.comp1ScoreLabel = self.font.render("Computer 1: "  +str(self.poker.scores[1]), 1, BLACK)
+		self.comp2ScoreLabel = self.font.render("Computer 2: "  +str(self.poker.scores[2]), 1, BLACK)
+		self.comp3ScoreLabel = self.font.render("Computer 3: "  +str(self.poker.scores[3]), 1, BLACK)
 
 		SCREEN.blit(self.playerScoreLabel, (10, 10))
-		SCREEN.blit(self.comp1ScoreLabel, (10, 30))
-		SCREEN.blit(self.comp2ScoreLabel, (10, 50))
-		SCREEN.blit(self.comp3ScoreLabel, (10, 70))
+		SCREEN.blit(self.comp1ScoreLabel, (10, 40))
+		SCREEN.blit(self.comp2ScoreLabel, (10, 70))
+		SCREEN.blit(self.comp3ScoreLabel, (10, 100))
 
 
 #############################################################
