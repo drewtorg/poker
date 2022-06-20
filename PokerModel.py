@@ -98,7 +98,7 @@ class Deck:
 
 		#cap out the cards dealt
 		if amount > len(self.deck):
-			print "There are not enough cards!  I can only deal " + str(len(self.deck)) + " cards."
+			print("There are not enough cards!  I can only deal " + str(len(self.deck)) + " cards.")
 			amount = len(self.deck)
 
 		#create and then return a list of cards taken randomly from the deck
@@ -139,13 +139,13 @@ class Poker:
 		suits = {'H':0, 'C':0, 'S':0, 'D':0}
 		for card in hand:
 			suits[card.suit] += 1
-		return max(suits.iteritems(), key=operator.itemgetter(1))[0]
+		return max(suits.items(), key=operator.itemgetter(1))[0]
 
 	def get_most_rank(self, hand):
 		ranks = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0}
 		for card in hand:
 			ranks[card.rank] += 1
-		return max(ranks.iteritems(), key=operator.itemgetter(1))[0]
+		return max(ranks.items(), key=operator.itemgetter(1))[0]
 
 	def replace_suit(self, hand):
 		suit = self.get_most_suit(hand)
@@ -183,7 +183,7 @@ class Poker:
 	#repalces the selected cards in the hand with the top cards on the deck
 	def replace(self, hand):
 		count = 0
-		for i in xrange(3):
+		for i in range(3):
 			for card in hand:
 				if card.selected:
 					hand.hand.remove(card)
@@ -264,7 +264,7 @@ class Poker:
 			points = 1 #high card 
 
 		#print out the values of the cards in order from greatest to least with 2 digits for each card in order to generate a point value
-		sorted_cardCount = sorted(cardCount.iteritems(), key=operator.itemgetter(1,0), reverse=True)
+		sorted_cardCount = sorted(cardCount.items(), key=operator.itemgetter(1,0), reverse=True)
 		for keyval in sorted_cardCount:
 			if keyval[1] != 0:
 				points = int(str(points) + (keyval[1] * str(keyval[0]).zfill(2)))
@@ -300,7 +300,7 @@ class Poker:
 
 		values.sort()
 
-		for i in xrange(0,4):
+		for i in range(0,4):
 			if values[i] + 1 != values[i + 1]:
 				return False
 		return True
